@@ -1,0 +1,171 @@
+package xhtml
+
+import (
+	"fmt"
+	"strings"
+
+	"golang.org/x/net/html"
+)
+
+type Node struct {
+	*html.Node
+}
+
+func NewNode(node *html.Node) Node {
+	return Node{
+		node,
+	}
+}
+
+func NilNode() Node {
+	return Node{
+		nil,
+	}
+}
+
+func (node Node) String() string {
+	return fmt.Sprintf("%+v", node.Node)
+}
+
+func (node Node) IsNil() bool {
+	return node.Node == nil
+}
+
+func (node Node) GetData() string {
+	if node.IsNil() {
+		return ""
+	}
+	return node.Node.Data
+}
+
+func (node Node) IsElement() bool {
+	if node.IsNil() {
+		return false
+	}
+	return node.Node.Type == html.ElementNode
+}
+
+func (node Node) IsText() bool {
+	if node.IsNil() {
+		return false
+	}
+	return node.Node.Type == html.TextNode
+}
+
+func (node Node) IsLeaf() bool {
+	if node.IsNil() {
+		return false
+	}
+	return node.Node.FirstChild == nil
+}
+
+func (node Node) PrevElement() Node {
+	prev := node.Node
+	for prev != nil {
+		prev = prev.PrevSibling
+		if prev != nil && prev.Type == html.ElementNode {
+			return NewNode(prev)
+		}
+	}
+
+	return NilNode()
+}
+
+func (node Node) NextElement() Node {
+	next := node.Node
+	for next != nil {
+		next = next.NextSibling
+		if next != nil && next.Type == html.ElementNode {
+			return NewNode(next)
+		}
+	}
+
+	return NilNode()
+}
+
+func (node Node) NextChildElement() Node {
+	if node.IsNil() {
+		return NilNode()
+	}
+	for child := node.FirstChild; child != nil; child = child.NextSibling {
+		if child.Type == html.ElementNode {
+			return NewNode(child)
+		}
+	}
+
+	return NilNode()
+}
+
+func (node Node) GetAllChildElements() []Node {
+	children := []Node{}
+	if node.IsNil() {
+		return children
+	}
+	for child := node.FirstChild; child != nil; child = child.NextSibling {
+		if child.Type == html.ElementNode {
+			children = append(children, NewNode(child))
+		}
+	}
+
+	return children
+}
+
+func (node Node) GetAttributes() []string {
+	keys := []string{}
+
+	if node.IsNil() {
+		return keys
+	}
+	for _, a := range node.Node.Attr {
+		keys = append(keys, a.Key)
+	}
+
+	return keys
+}
+
+func (node Node) GetAttributeValue(key string) (string, bool) {
+	if node.IsNil() {
+		return "", false
+	}
+	for _, a := range node.Node.Attr {
+		if strings.EqualFold(a.Key, key) {
+			return a.Val, true
+		}
+	}
+
+	return "", false
+}
+
+func (node Node) GetNodeLink() (string, bool) {
+	if node.IsNil() {
+		return "", false
+	}
+	if node.Node.Type == html.ElementNode &&
+		strings.EqualFold(node.Node.Data, A) {
+		return node.GetAttributeValue(HREF)
+	}
+	if node.Node.Type == html.ElementNode &&
+		strings.EqualFold(node.Node.Data, IMG) {
+		return node.GetAttributeValue(SRC)
+	}
+
+	return "", false
+}
+
+func (node Node) ConcatAllText(sep string) string {
+	if node.IsNil() {
+		return ""
+	}
+	if node.IsLeaf() && node.IsText() {
+		return node.GetData()
+	}
+	texts := []string{}
+	for child := node.FirstChild; child != nil; child = child.NextSibling {
+		txt := NewNode(child).ConcatAllText(sep)
+		if strings.TrimSpace(txt) != "" {
+			texts = append(texts, txt)
+		}
+	}
+
+	return strings.Join(texts, sep)
+}
