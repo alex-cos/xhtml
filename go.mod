@@ -1,10 +1,10 @@
 module github.com/alex-cos/xhtml
 
-go 1.20
+go 1.25
 
 require (
-	github.com/kjk/common v0.0.0-20250101150952-60008e1089e4
-	golang.org/x/net v0.35.0
+	github.com/kjk/common v0.0.0-20260305024341-207ad4f3632f
+	golang.org/x/net v0.52.0
 )
 
 require (
