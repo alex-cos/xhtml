@@ -1,10 +1,13 @@
 package xhtml
 
 func (node Node) FindFirstNode(filter FilterFunc) Node {
+	if node.IsNil() {
+		return NilNode()
+	}
 	if filter(&node) {
 		return node
 	}
-	for child := node.Node.FirstChild; child != nil; child = child.NextSibling {
+	for child := node.FirstChild; child != nil; child = child.NextSibling {
 		found := NewNode(child).FindFirstNode(filter)
 		if !found.IsNil() {
 			return found
@@ -17,7 +20,10 @@ func (node Node) FindFirstNode(filter FilterFunc) Node {
 func (node Node) FindLastNode(filter FilterFunc) Node {
 	var found Node
 
-	for child := node.Node.FirstChild; child != nil; child = child.NextSibling {
+	if node.IsNil() {
+		return NilNode()
+	}
+	for child := node.FirstChild; child != nil; child = child.NextSibling {
 		f := NewNode(child).FindLastNode(filter)
 		if !f.IsNil() {
 			found = f
@@ -31,12 +37,15 @@ func (node Node) FindLastNode(filter FilterFunc) Node {
 }
 
 func (node Node) FindAllNodes(filter FilterFunc) []Node {
+	if node.IsNil() {
+		return []Node{}
+	}
 	founded := []Node{}
 
 	if filter(&node) {
 		founded = append(founded, node)
 	}
-	for child := node.Node.FirstChild; child != nil; child = child.NextSibling {
+	for child := node.FirstChild; child != nil; child = child.NextSibling {
 		nodes := NewNode(child).FindAllNodes(filter)
 		founded = append(founded, nodes...)
 	}

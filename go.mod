@@ -1,13 +1,14 @@
 module github.com/alex-cos/xhtml
 
-go 1.25
+go 1.25.5
 
 require (
-	github.com/kjk/common v0.0.0-20260305024341-207ad4f3632f
+	github.com/stretchr/testify v1.11.1
 	golang.org/x/net v0.52.0
 )
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

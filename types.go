@@ -44,28 +44,28 @@ func (node Node) GetData() string {
 	if node.IsNil() {
 		return ""
 	}
-	return node.Node.Data
+	return node.Data
 }
 
 func (node Node) IsElement() bool {
 	if node.IsNil() {
 		return false
 	}
-	return node.Node.Type == html.ElementNode
+	return node.Type == html.ElementNode
 }
 
 func (node Node) IsText() bool {
 	if node.IsNil() {
 		return false
 	}
-	return node.Node.Type == html.TextNode
+	return node.Type == html.TextNode
 }
 
 func (node Node) IsLeaf() bool {
 	if node.IsNil() {
 		return false
 	}
-	return node.Node.FirstChild == nil
+	return node.FirstChild == nil
 }
 
 func (node Node) PrevElement() Node {
@@ -127,7 +127,7 @@ func (node Node) GetAttributes() []string {
 	if node.IsNil() {
 		return keys
 	}
-	for _, a := range node.Node.Attr {
+	for _, a := range node.Attr {
 		keys = append(keys, a.Key)
 	}
 
@@ -138,7 +138,7 @@ func (node Node) GetAttributeValue(key string) (string, bool) {
 	if node.IsNil() {
 		return "", false
 	}
-	for _, a := range node.Node.Attr {
+	for _, a := range node.Attr {
 		if strings.EqualFold(a.Key, key) {
 			return a.Val, true
 		}
@@ -151,12 +151,12 @@ func (node Node) GetNodeLink() (string, bool) {
 	if node.IsNil() {
 		return "", false
 	}
-	if node.Node.Type == html.ElementNode &&
-		strings.EqualFold(node.Node.Data, A) {
+	if node.Type == html.ElementNode &&
+		strings.EqualFold(node.Data, A) {
 		return node.GetAttributeValue(HREF)
 	}
-	if node.Node.Type == html.ElementNode &&
-		strings.EqualFold(node.Node.Data, IMG) {
+	if node.Type == html.ElementNode &&
+		strings.EqualFold(node.Data, IMG) {
 		return node.GetAttributeValue(SRC)
 	}
 

@@ -46,14 +46,14 @@ func FilterAnyLeaf() FilterFunc {
 func FilterByElement(name string) FilterFunc {
 	return func(node *Node) bool {
 		return node.IsElement() &&
-			strings.EqualFold(node.Node.Data, name)
+			strings.EqualFold(node.Data, name)
 	}
 }
 
 func FilterTextByRegEx(regex *regexp.Regexp) FilterFunc {
 	return func(node *Node) bool {
 		return node.IsText() &&
-			regex.MatchString(node.Node.Data)
+			regex.MatchString(node.Data)
 	}
 }
 
