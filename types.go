@@ -2,6 +2,7 @@ package xhtml
 
 import (
 	"fmt"
+	"io"
 	"strings"
 
 	"golang.org/x/net/html"
@@ -21,6 +22,14 @@ func NilNode() Node {
 	return Node{
 		nil,
 	}
+}
+
+func Parse(r io.Reader) (Node, error) {
+	doc, err := html.Parse(r)
+	if err != nil {
+		return NilNode(), err
+	}
+	return NewNode(doc), nil
 }
 
 func (node Node) String() string {
@@ -60,10 +69,11 @@ func (node Node) IsLeaf() bool {
 }
 
 func (node Node) PrevElement() Node {
-	prev := node.Node
-	for prev != nil {
-		prev = prev.PrevSibling
-		if prev != nil && prev.Type == html.ElementNode {
+	if node.IsNil() {
+		return NilNode()
+	}
+	for prev := node.PrevSibling; prev != nil; prev = prev.PrevSibling {
+		if prev.Type == html.ElementNode {
 			return NewNode(prev)
 		}
 	}
@@ -72,10 +82,11 @@ func (node Node) PrevElement() Node {
 }
 
 func (node Node) NextElement() Node {
-	next := node.Node
-	for next != nil {
-		next = next.NextSibling
-		if next != nil && next.Type == html.ElementNode {
+	if node.IsNil() {
+		return NilNode()
+	}
+	for next := node.NextSibling; next != nil; next = next.NextSibling {
+		if next.Type == html.ElementNode {
 			return NewNode(next)
 		}
 	}

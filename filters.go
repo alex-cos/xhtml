@@ -79,7 +79,7 @@ func FilterByClassName(className string) FilterFunc {
 		}
 		for _, a := range node.Attr {
 			if strings.EqualFold(a.Key, "class") {
-				classes := strings.Split(a.Val, " ")
+				classes := strings.Fields(a.Val)
 				for _, class := range classes {
 					if strings.EqualFold(class, className) {
 						return true
