@@ -1,5 +1,11 @@
 # xhtml
 
+[![Go Version](https://img.shields.io/badge/Go-1.23%2B-blue)](https://go.dev/)
+[![Test Status](https://github.com/alex-cos/xhtml/actions/workflows/test.yml/badge.svg)](https://github.com/alex-cos/xhtml/actions/workflows/test.yml)
+[![Lint Status](https://github.com/alex-cos/xhtml/actions/workflows/lint.yml/badge.svg)](https://github.com/alex-cos/xhtml/actions/workflows/lint.yml)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+[![Go Report Card](https://goreportcard.com/badge/github.com/alex-cos/xhtml)](https://goreportcard.com/report/github.com/alex-cos/xhtml)
+
 A small Go library for traversing and querying an HTML DOM with ease.
 
 `xhtml` is an ergonomic wrapper around `golang.org/x/net/html` that adds navigation methods (`FindFirstNode`, `FindAllNodes`, `FindNthNode`, `FindLastNode`), composable filters, and utilities for extracting text and attributes.
