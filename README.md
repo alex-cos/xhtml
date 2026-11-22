@@ -1,6 +1,6 @@
 # xhtml
 
-[![Go Version](https://img.shields.io/badge/Go-1.23%2B-blue)](https://go.dev/)
+[![Go Version](https://img.shields.io/badge/Go-1.25%2B-blue)](https://go.dev/)
 [![Test Status](https://github.com/alex-cos/xhtml/actions/workflows/test.yml/badge.svg)](https://github.com/alex-cos/xhtml/actions/workflows/test.yml)
 [![Codecov](https://codecov.io/gh/alex-cos/xhtml/branch/main/graph/badge.svg)](https://codecov.io/gh/alex-cos/xhtml)
 [![Lint Status](https://github.com/alex-cos/xhtml/actions/workflows/lint.yml/badge.svg)](https://github.com/alex-cos/xhtml/actions/workflows/lint.yml)
@@ -49,8 +49,8 @@ func main() {
 ### Finding the first matching node
 
 ```go
-body := root.FindFirstNode(xhtml.FilterByElement(xhtml.BODY))
-title := root.FindFirstNode(xhtml.FilterByElement(xhtml.H1))
+body := root.FindFirstNode(xhtml.FilterByElement(xhtml.TagBody))
+title := root.FindFirstNode(xhtml.FilterByElement(xhtml.TagH1))
 
 fmt.Println(title.GetData()) // "h1"
 ```
@@ -58,7 +58,7 @@ fmt.Println(title.GetData()) // "h1"
 ### Finding all matching nodes
 
 ```go
-links := root.FindAllNodes(xhtml.FilterByElement(xhtml.A))
+links := root.FindAllNodes(xhtml.FilterByElement(xhtml.TagA))
 
 for _, link := range links {
   href, ok := link.GetAttributeValue("href")
@@ -72,7 +72,7 @@ for _, link := range links {
 
 ```go
 // Find the 3rd <li> element
-thirdLi := root.FindNthNode(3, xhtml.FilterByElement(xhtml.LI))
+thirdLi := root.FindNthNode(3, xhtml.FilterByElement(xhtml.TagLi))
 
 if !thirdLi.IsNil() {
   fmt.Println("Found!")
@@ -82,15 +82,15 @@ if !thirdLi.IsNil() {
 ### Finding the last matching node
 
 ```go
-lastLink := root.FindLastNode(xhtml.FilterByElement(xhtml.A))
+lastLink := root.FindLastNode(xhtml.FilterByElement(xhtml.TagA))
 ```
 
 ## Available Filters
 
 ```go
 // By element type
-xhtml.FilterByElement(xhtml.DIV)
-xhtml.FilterByElement(xhtml.A)
+xhtml.FilterByElement(xhtml.TagDiv)
+xhtml.FilterByElement(xhtml.TagA)
 xhtml.FilterAnyElement()
 xhtml.FilterAnyText()
 xhtml.FilterAnyLeaf()
@@ -99,7 +99,18 @@ xhtml.FilterAnyLeaf()
 xhtml.FilterByAttribute("data-type", "active")
 xhtml.FilterByID("main-content")
 xhtml.FilterByClassName("card")
+xhtml.FilterByClassNames("card", "active") // all classes required
 xhtml.FilterByRef("mainTitle")
+
+// By attribute presence or partial value (values are case-sensitive)
+xhtml.FilterByAttributeExists("data-id")
+xhtml.FilterByAttributePrefix("href", "https://")
+xhtml.FilterByAttributeSuffix("src", ".png")
+xhtml.FilterByAttributeContains("href", "example.com")
+
+// By text content (text nodes)
+xhtml.FilterByText("Contact")         // exact match, surrounding white space ignored
+xhtml.FilterByTextContains("Contact") // substring match
 
 // By regular expression (text nodes)
 regex := regexp.MustCompile(`^\d+\.?\d*\s*€$`)
@@ -112,15 +123,15 @@ Filters can be combined with `And`, `Or`, and `Not`:
 
 ```go
 // All <a> elements with class "external"
-filter := xhtml.FilterByElement(xhtml.A).And(xhtml.FilterByClassName("external"))
+filter := xhtml.FilterByElement(xhtml.TagA).And(xhtml.FilterByClassName("external"))
 links := root.FindAllNodes(filter)
 
 // All elements that are NOT <br>
-filter := xhtml.FilterByElement(xhtml.BR).Not()
+filter := xhtml.FilterByElement(xhtml.TagBr).Not()
 nodes := root.FindAllNodes(filter)
 
 // Either <h1> or <h2>
-filter := xhtml.FilterByElement(xhtml.H1).Or(xhtml.FilterByElement(xhtml.H2))
+filter := xhtml.FilterByElement(xhtml.TagH1).Or(xhtml.FilterByElement(xhtml.TagH2))
 headings := root.FindAllNodes(filter)
 ```
 
@@ -163,10 +174,10 @@ keys := node.GetAttributes() // ["src", "alt", "class"]
 The library exports constants for common HTML tags:
 
 ```go
-xhtml.HTML, xhtml.HEAD, xhtml.BODY, xhtml.DIV, xhtml.SPAN,
-xhtml.H1, xhtml.H2, xhtml.H3, xhtml.P, xhtml.A, xhtml.IMG,
-xhtml.UL, xhtml.LI, xhtml.TABLE, xhtml.TR, xhtml.TD,
-xhtml.FORM, xhtml.INPUT, xhtml.BUTTON, // ... and more
+xhtml.TagHTML, xhtml.TagHead, xhtml.TagBody, xhtml.TagDiv, xhtml.TagSpan,
+xhtml.TagH1, xhtml.TagH2, xhtml.TagH3, xhtml.TagP, xhtml.TagA, xhtml.TagImg,
+xhtml.TagUl, xhtml.TagLi, xhtml.TagTable, xhtml.TagTr, xhtml.TagTd,
+xhtml.TagForm, xhtml.TagInput, xhtml.TagButton, // ... and more
 ```
 
 ## Complete Example
@@ -196,10 +207,10 @@ func main() {
   }
 
   root := xhtml.NewNode(doc)
-  body := root.FindFirstNode(xhtml.FilterByElement(xhtml.BODY))
+  body := root.FindFirstNode(xhtml.FilterByElement(xhtml.TagBody))
 
   // Extract all links
-  links := body.FindAllNodes(xhtml.FilterByElement(xhtml.A))
+  links := body.FindAllNodes(xhtml.FilterByElement(xhtml.TagA))
   for _, link := range links {
     href, _ := link.GetAttributeValue("href")
     text := link.ConcatAllText(" ")
@@ -207,7 +218,7 @@ func main() {
   }
 
   // Extract all images
-  images := body.FindAllNodes(xhtml.FilterByElement(xhtml.IMG))
+  images := body.FindAllNodes(xhtml.FilterByElement(xhtml.TagImg))
   for _, img := range images {
     src, _ := img.GetAttributeValue("src")
     alt, _ := img.GetAttributeValue("alt")

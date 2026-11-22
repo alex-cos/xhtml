@@ -73,7 +73,7 @@ func TestNodeGetData(t *testing.T) {
 	t.Parallel()
 
 	root := parseTestFile(t)
-	body := root.FindFirstNode(xhtml.FilterByElement(xhtml.BODY))
+	body := root.FindFirstNode(xhtml.FilterByElement(xhtml.TagBody))
 	assert.Equal(t, "body", body.GetData())
 
 	assert.Empty(t, xhtml.NilNode().GetData())
@@ -83,7 +83,7 @@ func TestNodeIsElement(t *testing.T) {
 	t.Parallel()
 
 	root := parseTestFile(t)
-	body := root.FindFirstNode(xhtml.FilterByElement(xhtml.BODY))
+	body := root.FindFirstNode(xhtml.FilterByElement(xhtml.TagBody))
 	assert.True(t, body.IsElement())
 
 	textNodes := root.FindAllNodes(xhtml.FilterAnyText())
@@ -101,7 +101,7 @@ func TestNodeIsText(t *testing.T) {
 	require.NotEmpty(t, textNodes)
 	assert.True(t, textNodes[0].IsText())
 
-	body := root.FindFirstNode(xhtml.FilterByElement(xhtml.BODY))
+	body := root.FindFirstNode(xhtml.FilterByElement(xhtml.TagBody))
 	assert.False(t, body.IsText())
 
 	assert.False(t, xhtml.NilNode().IsText())
@@ -111,10 +111,10 @@ func TestNodeIsLeaf(t *testing.T) {
 	t.Parallel()
 
 	root := parseTestFile(t)
-	br := root.FindFirstNode(xhtml.FilterByElement(xhtml.BR))
+	br := root.FindFirstNode(xhtml.FilterByElement(xhtml.TagBr))
 	assert.True(t, br.IsLeaf())
 
-	body := root.FindFirstNode(xhtml.FilterByElement(xhtml.BODY))
+	body := root.FindFirstNode(xhtml.FilterByElement(xhtml.TagBody))
 	assert.False(t, body.IsLeaf())
 
 	assert.False(t, xhtml.NilNode().IsLeaf())
@@ -124,21 +124,21 @@ func TestNodePrevElement(t *testing.T) {
 	t.Parallel()
 
 	root := parseTestFile(t)
-	secondSpan := root.FindNthNode(2, xhtml.FilterByElement(xhtml.SPAN))
+	secondSpan := root.FindNthNode(2, xhtml.FilterByElement(xhtml.TagSpan))
 	require.False(t, secondSpan.IsNil())
 
 	prev := secondSpan.PrevElement()
 	assert.False(t, prev.IsNil())
-	assert.Equal(t, xhtml.SPAN, prev.GetData())
+	assert.Equal(t, xhtml.TagSpan, prev.GetData())
 
-	thirdSpan := root.FindNthNode(3, xhtml.FilterByElement(xhtml.SPAN))
+	thirdSpan := root.FindNthNode(3, xhtml.FilterByElement(xhtml.TagSpan))
 	require.False(t, thirdSpan.IsNil())
 
 	prev = thirdSpan.PrevElement()
 	assert.False(t, prev.IsNil())
-	assert.Equal(t, xhtml.HR, prev.GetData())
+	assert.Equal(t, xhtml.TagHr, prev.GetData())
 
-	firstSpan := root.FindNthNode(1, xhtml.FilterByElement(xhtml.SPAN))
+	firstSpan := root.FindNthNode(1, xhtml.FilterByElement(xhtml.TagSpan))
 	require.False(t, firstSpan.IsNil())
 
 	prev = firstSpan.PrevElement()
@@ -151,14 +151,14 @@ func TestNodeNextElement(t *testing.T) {
 	t.Parallel()
 
 	root := parseTestFile(t)
-	firstSpan := root.FindNthNode(1, xhtml.FilterByElement(xhtml.SPAN))
+	firstSpan := root.FindNthNode(1, xhtml.FilterByElement(xhtml.TagSpan))
 	require.False(t, firstSpan.IsNil())
 
 	next := firstSpan.NextElement()
 	assert.False(t, next.IsNil())
-	assert.Equal(t, xhtml.SPAN, next.GetData())
+	assert.Equal(t, xhtml.TagSpan, next.GetData())
 
-	thirdSpan := root.FindNthNode(3, xhtml.FilterByElement(xhtml.SPAN))
+	thirdSpan := root.FindNthNode(3, xhtml.FilterByElement(xhtml.TagSpan))
 	next = thirdSpan.NextElement()
 	assert.True(t, next.IsNil())
 
@@ -169,16 +169,16 @@ func TestNodeNextChildElement(t *testing.T) {
 	t.Parallel()
 
 	root := parseTestFile(t)
-	body := root.FindFirstNode(xhtml.FilterByElement(xhtml.BODY))
+	body := root.FindFirstNode(xhtml.FilterByElement(xhtml.TagBody))
 	require.False(t, body.IsNil())
 
 	firstChild := body.NextChildElement()
 	assert.False(t, firstChild.IsNil())
-	assert.Equal(t, xhtml.HEADER, firstChild.GetData())
+	assert.Equal(t, xhtml.TagHeader, firstChild.GetData())
 
 	assert.True(t, xhtml.NilNode().NextChildElement().IsNil())
 
-	br := root.FindFirstNode(xhtml.FilterByElement(xhtml.BR))
+	br := root.FindFirstNode(xhtml.FilterByElement(xhtml.TagBr))
 	assert.True(t, br.NextChildElement().IsNil())
 }
 
@@ -186,15 +186,15 @@ func TestNodeGetAllChildElements(t *testing.T) {
 	t.Parallel()
 
 	root := parseTestFile(t)
-	body := root.FindFirstNode(xhtml.FilterByElement(xhtml.BODY))
+	body := root.FindFirstNode(xhtml.FilterByElement(xhtml.TagBody))
 	require.False(t, body.IsNil())
 
 	children := body.GetAllChildElements()
 	assert.Len(t, children, 4)
-	assert.Equal(t, xhtml.HEADER, children[0].GetData())
-	assert.Equal(t, xhtml.MAIN, children[1].GetData())
-	assert.Equal(t, xhtml.DIV, children[2].GetData())
-	assert.Equal(t, xhtml.FOOTER, children[3].GetData())
+	assert.Equal(t, xhtml.TagHeader, children[0].GetData())
+	assert.Equal(t, xhtml.TagMain, children[1].GetData())
+	assert.Equal(t, xhtml.TagDiv, children[2].GetData())
+	assert.Equal(t, xhtml.TagFooter, children[3].GetData())
 
 	assert.Empty(t, xhtml.NilNode().GetAllChildElements())
 }
@@ -203,7 +203,7 @@ func TestNodeGetAttributes(t *testing.T) {
 	t.Parallel()
 
 	root := parseTestFile(t)
-	img := root.FindFirstNode(xhtml.FilterByElement(xhtml.IMG))
+	img := root.FindFirstNode(xhtml.FilterByElement(xhtml.TagImg))
 	require.False(t, img.IsNil())
 
 	attrs := img.GetAttributes()
@@ -217,7 +217,7 @@ func TestNodeGetAttributeValue(t *testing.T) {
 	t.Parallel()
 
 	root := parseTestFile(t)
-	img := root.FindFirstNode(xhtml.FilterByElement(xhtml.IMG))
+	img := root.FindFirstNode(xhtml.FilterByElement(xhtml.TagImg))
 	require.False(t, img.IsNil())
 
 	val, ok := img.GetAttributeValue("src")
@@ -242,21 +242,21 @@ func TestNodeGetNodeLink(t *testing.T) {
 
 	root := parseTestFile(t)
 
-	link := root.FindFirstNode(xhtml.FilterByElement(xhtml.A))
+	link := root.FindFirstNode(xhtml.FilterByElement(xhtml.TagA))
 	require.False(t, link.IsNil())
 
 	href, ok := link.GetNodeLink()
 	assert.True(t, ok)
 	assert.Equal(t, "#", href)
 
-	img := root.FindFirstNode(xhtml.FilterByElement(xhtml.IMG))
+	img := root.FindFirstNode(xhtml.FilterByElement(xhtml.TagImg))
 	require.False(t, img.IsNil())
 
 	src, ok := img.GetNodeLink()
 	assert.True(t, ok)
 	assert.Equal(t, "https://via.placeholder.com/150", src)
 
-	div := root.FindFirstNode(xhtml.FilterByElement(xhtml.DIV))
+	div := root.FindFirstNode(xhtml.FilterByElement(xhtml.TagDiv))
 	require.False(t, div.IsNil())
 
 	linkVal, ok := div.GetNodeLink()
@@ -271,7 +271,7 @@ func TestNodeConcatAllText(t *testing.T) {
 	t.Parallel()
 
 	root := parseTestFile(t)
-	body := root.FindFirstNode(xhtml.FilterByElement(xhtml.BODY))
+	body := root.FindFirstNode(xhtml.FilterByElement(xhtml.TagBody))
 	require.False(t, body.IsNil())
 
 	text := body.ConcatAllText("\n")
